@@ -3,6 +3,8 @@
 
 #include <Windows.h>
 
+const wchar_t TITLE[] = L"Pong!";
+
 LRESULT CALLBACK WndProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam);
 
 int WINAPI WinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance, _In_ LPSTR pCmdLine, _In_ int nCmdShow)
@@ -27,7 +29,7 @@ int WINAPI WinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance, _
     HWND hWnd = CreateWindowEx(
         0,
         windowName,
-        L"Pong!",
+        TITLE,
         WS_OVERLAPPEDWINDOW | WS_VISIBLE,
         CW_USEDEFAULT,
         CW_USEDEFAULT,
@@ -44,7 +46,7 @@ int WINAPI WinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance, _
     }
 
     MSG msg = { 0 };
-    while (GetMessage(&msg, NULL, 0, 0)) {
+    while (GetMessage(&msg, NULL, 0, 0) > 0) {
         TranslateMessage(&msg);
         DispatchMessage(&msg);
     }
@@ -55,11 +57,6 @@ int WINAPI WinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance, _
 LRESULT CALLBACK WndProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam)
 {
     switch (msg) {
-        case WM_DESTROY:
-        {
-            PostQuitMessage(0);
-            return 0;
-        }
         case WM_PAINT:
         {
             PAINTSTRUCT ps;
@@ -68,10 +65,27 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam)
             EndPaint(hWnd, &ps);
             return 0;
         }
+        case WM_SIZE:
+        {
+            // pause game
+            return 0;
+        }
+        case WM_CLOSE:
+        {
+            if (MessageBox(hWnd, L"Are you sure?", TITLE, MB_OKCANCEL) == IDOK)
+            {
+                DestroyWindow(hWnd);
+            }
+            return 0;
+        }
+        case WM_DESTROY:
+        {
+            PostQuitMessage(0);
+            return 0;
+        }
         default:
         {
             return DefWindowProc(hWnd, msg, wParam, lParam);
         }
     }
-    return 0;
 }
