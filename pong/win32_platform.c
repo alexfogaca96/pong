@@ -1,20 +1,14 @@
 #define UNICODE
 #define _UNICODE
 
-#define IMG_1920X1080_32BITS_BUFFER_SIZE 10485760
 #define TITLE L"Pong!"
+#define REAL_WINDOW_SIZE_TO_RENDER_SIZE_Y_OFFSET 39
+
+#include "game.h"
+#include "platform_common.h"
+#include "render.h"
 
 #include <Windows.h>
-
-
-struct {
-    int width, height;
-    unsigned int* pixels;
-    BITMAPINFO bitmap;
-} typedef RenderBuffer;
-
-RenderBuffer renderBuffer;
-
 
 LRESULT CALLBACK WndProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam)
 {
@@ -32,12 +26,23 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam)
             RECT rect;
             GetWindowRect(hWnd, &rect);
             renderBuffer.width = rect.right - rect.left;
-            renderBuffer.height = rect.bottom - rect.top;
+            renderBuffer.height = rect.bottom - rect.top - REAL_WINDOW_SIZE_TO_RENDER_SIZE_Y_OFFSET;
             if (renderBuffer.pixels) {
-                // free
+                VirtualFree(renderBuffer.pixels, 0, MEM_RELEASE);
             }
-            // allocate the buffer
-            // fill the bitmapinfo
+            renderBuffer.pixels = VirtualAlloc(
+                0,
+                sizeof(unsigned int) * renderBuffer.width * renderBuffer.height,
+                MEM_COMMIT | MEM_RESERVE,
+                PAGE_READWRITE
+            );
+            renderBuffer.bitmap.bmiHeader.biSize = sizeof(renderBuffer.bitmap.bmiHeader);
+            renderBuffer.bitmap.bmiHeader.biWidth = renderBuffer.width;
+            renderBuffer.bitmap.bmiHeader.biHeight = renderBuffer.height;
+            renderBuffer.bitmap.bmiHeader.biPlanes = 1;
+            renderBuffer.bitmap.bmiHeader.biBitCount = 32;
+            renderBuffer.bitmap.bmiHeader.biCompression = BI_RGB;
+            renderBuffer.bitmap.bmiHeader.biSizeImage = 0;
             return 0;
         }
         case WM_CLOSE:
@@ -104,15 +109,49 @@ int WINAPI WinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance, _
         return -1;
     }
 
-    MSG msg = { 0 };
-    while (GetMessage(&msg, NULL, 0, 0) > 0) {
+    Input input = { 0 };
+
+    unsigned int running = 1;
+    while (running) {
         // Input
-        TranslateMessage(&msg);
-        DispatchMessage(&msg);
+
+        for (int i = 0; i < BUTTON_COUNT; i++) input.buttons[i].changed = 0;
+
+        MSG msg = { 0 };
+        while (PeekMessageA(&msg, hWnd, 0, 0, PM_REMOVE)) {
+            
+            switch (msg.message) {
+                case WM_SYSKEYDOWN:
+                case WM_SYSKEYUP:
+                case WM_KEYDOWN:
+                case WM_KEYUP: {
+                    unsigned int virtualKeyCode = (unsigned int)msg.wParam;
+                    unsigned int wasDown = ((msg.lParam & (1 << 30)) != 0);
+                    unsigned int isDown  = ((msg.lParam & (1 << 31)) == 0);
+
+                    #define ProccessButton(vk, b) \
+                    if (virtualKeyCode == vk) {\
+                        input.buttons[b].changed = isDown != input.buttons[b].isDown;\
+                        input.buttons[b].isDown = isDown;\
+                    }
+
+                    ProccessButton(VK_LEFT, BUTTON_LEFT);
+                    ProccessButton(VK_RIGHT, BUTTON_RIGHT);
+                    ProccessButton(VK_UP, BUTTON_UP);
+                    ProccessButton(VK_DOWN, BUTTON_DOWN);
+
+                } break;
+                default: {
+                    TranslateMessage(&msg);
+                    DispatchMessage(&msg);
+                }
+            }
+        }
 
         // Simulation
+        SimulateGame(&input);
 
-        // Render
+        // Render  
         StretchDIBits(
             hdc,
             0, 0,
