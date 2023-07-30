@@ -109,12 +109,16 @@ int WINAPI WinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance, _
         return -1;
     }
 
-    Input input = { 0 };
+    LARGE_INTEGER lastTime;
+    QueryPerformanceCounter(&lastTime);
+    LARGE_INTEGER frequency;
+    QueryPerformanceFrequency(&frequency);
+    float lastDeltaTime = 0.01666f; // 60 fps initially
 
+    Input input = { 0 };
     unsigned int running = 1;
     while (running) {
         // Input
-
         for (int i = 0; i < BUTTON_COUNT; i++) input.buttons[i].changed = 0;
 
         MSG msg = { 0 };
@@ -149,7 +153,7 @@ int WINAPI WinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance, _
         }
 
         // Simulation
-        SimulateGame(&input);
+        SimulateGame(&input, lastDeltaTime);
 
         // Render  
         StretchDIBits(
@@ -163,6 +167,11 @@ int WINAPI WinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance, _
             DIB_RGB_COLORS,
             SRCCOPY
         );
+
+        LARGE_INTEGER currentTime;
+        QueryPerformanceCounter(&currentTime, lastDeltaTime);
+        lastDeltaTime = (float) (currentTime.QuadPart - lastTime.QuadPart) / frequency.QuadPart;
+        lastTime = currentTime;
     }
 
     return 0;

@@ -3,6 +3,6 @@
 
 #include "platform_common.h"
 
-void SimulateGame(Input* input);
+void SimulateGame(Input* input, float deltaTime);
 
 #endif

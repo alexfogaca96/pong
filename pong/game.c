@@ -1,18 +1,18 @@
+#include "math.h"
 #include "render.h"
 #include "platform_common.h"
 
-int posX = 20;
-int posY = 20;
-int size = 30;
+vec2 playerPos;
 
-void SimulateGame(Input* input)
+void SimulateGame(Input* input, float deltaTime)
 {
 	ClearScreen(0x551100);
-	
-	if (Pressed(BUTTON_LEFT))   posX -= 20;
-	if (Pressed(BUTTON_RIGHT))	posX += 20;
-	if (Pressed(BUTTON_UP))		posY += 20;
-	if (Pressed(BUTTON_DOWN))	posY -= 20;
 
-	DrawRectInPixels(posX, posY, posX + size, posY + size, 0xffff00);
+	float speed = 1000.0f;
+	if (IsDown(BUTTON_LEFT)) playerPos.x -= speed * deltaTime;
+	if (IsDown(BUTTON_RIGHT)) playerPos.x += speed * deltaTime;
+	if (IsDown(BUTTON_UP)) playerPos.y += speed * deltaTime;
+	if (IsDown(BUTTON_DOWN)) playerPos.y -= speed * deltaTime;
+
+	DrawRect(playerPos, (vec2) { 10, 10 }, 0xffff00);
 }

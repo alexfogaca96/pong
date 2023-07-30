@@ -22,6 +22,6 @@ struct {
 
 #define Pressed(b) (input->buttons[b].isDown && input->buttons[b].changed)
 #define Released(b) (!input->buttons[b].isDown && input->buttons[b].changed)
-#define IsDown(b) (input->buttons[b.isDown)
+#define IsDown(b) (input->buttons[b].isDown)
 
 #endif

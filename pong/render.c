@@ -1,6 +1,9 @@
 #include "render.h"
 #include "math.h"
 
+#define GAME_SCALE 0.001f
+#define ASPECT_RATIO 1.77f
+
 void ClearScreen(unsigned int color)
 {
 	unsigned int* pixel = renderBuffer.pixels;
@@ -24,4 +27,28 @@ void DrawRectInPixels(int x0, int y0, int x1, int y1, unsigned int color)
 			*pixel++ = color;
 		}
 	}
+}
+
+/* didn't quite understand and other than being pixel-independent it seems bad */
+void DrawRect(vec2 v, vec2 halfSize, unsigned int color)
+{
+	float aspectMultiplier = (float) renderBuffer.height;
+	if ((float) renderBuffer.width / (float) renderBuffer.height < ASPECT_RATIO) {
+		aspectMultiplier = (float) renderBuffer.width / ASPECT_RATIO;
+	}
+
+	float aspectInScale = aspectMultiplier * GAME_SCALE;
+	halfSize.x *= aspectInScale;
+	halfSize.y *= aspectInScale;
+	v.x *= aspectInScale;
+	v.y *= aspectInScale;
+	v.x += (float) renderBuffer.width * .5f;
+	v.y += (float) renderBuffer.height * .5f;
+
+	int x0 = (int) (v.x - halfSize.x);
+	int y0 = (int) (v.y - halfSize.y);
+	int x1 = (int) (v.x + halfSize.x);
+	int y1 = (int) (v.y + halfSize.y);
+
+	DrawRectInPixels(x0, y0, x1, y1, color);
 }
