@@ -156,6 +156,7 @@
     <ClCompile Include="platform_common.h" />
     <ClCompile Include="render.c" />
     <ClCompile Include="win32_platform.c" />
+    <ClCompile Include="win32_render.h" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="game.h" />

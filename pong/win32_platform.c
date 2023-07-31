@@ -7,6 +7,7 @@
 #include "game.h"
 #include "platform_common.h"
 #include "render.h"
+#include "win32_render.h"
 
 #include <Windows.h>
 
@@ -36,13 +37,13 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam)
                 MEM_COMMIT | MEM_RESERVE,
                 PAGE_READWRITE
             );
-            renderBuffer.bitmap.bmiHeader.biSize = sizeof(renderBuffer.bitmap.bmiHeader);
-            renderBuffer.bitmap.bmiHeader.biWidth = renderBuffer.width;
-            renderBuffer.bitmap.bmiHeader.biHeight = renderBuffer.height;
-            renderBuffer.bitmap.bmiHeader.biPlanes = 1;
-            renderBuffer.bitmap.bmiHeader.biBitCount = 32;
-            renderBuffer.bitmap.bmiHeader.biCompression = BI_RGB;
-            renderBuffer.bitmap.bmiHeader.biSizeImage = 0;
+            win32RenderBuffer.bitmap.bmiHeader.biSize = sizeof(win32RenderBuffer.bitmap.bmiHeader);
+            win32RenderBuffer.bitmap.bmiHeader.biWidth = renderBuffer.width;
+            win32RenderBuffer.bitmap.bmiHeader.biHeight = renderBuffer.height;
+            win32RenderBuffer.bitmap.bmiHeader.biPlanes = 1;
+            win32RenderBuffer.bitmap.bmiHeader.biBitCount = 32;
+            win32RenderBuffer.bitmap.bmiHeader.biCompression = BI_RGB;
+            win32RenderBuffer.bitmap.bmiHeader.biSizeImage = 0;
             return 0;
         }
         case WM_CLOSE:
@@ -163,7 +164,7 @@ int WINAPI WinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance, _
             0, 0,
             renderBuffer.width, renderBuffer.height,
             renderBuffer.pixels,
-            &renderBuffer.bitmap,
+            &win32RenderBuffer.bitmap,
             DIB_RGB_COLORS,
             SRCCOPY
         );

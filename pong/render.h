@@ -1,13 +1,11 @@
 #ifndef RENDER_H
 #define RENDER_H
 
-#include <Windows.h>
 #include "math.h"
 
 struct {
     int width, height;
     unsigned int* pixels;
-    BITMAPINFO bitmap;
 } typedef RenderBuffer;
 
 RenderBuffer renderBuffer;
