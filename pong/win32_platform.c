@@ -8,8 +8,13 @@
 #include "platform_common.h"
 #include "render.h"
 #include "win32_render.h"
+#include "win32_input.h"
 
 #include <Windows.h>
+
+
+void ProccessButtons(Input* input, int vkCode, int wasDown, int isDown);
+
 
 LRESULT CALLBACK WndProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam)
 {
@@ -133,18 +138,7 @@ int WINAPI WinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance, _
                     unsigned int virtualKeyCode = (unsigned int)msg.wParam;
                     unsigned int wasDown = ((msg.lParam & (1 << 30)) != 0);
                     unsigned int isDown  = ((msg.lParam & (1 << 31)) == 0);
-
-                    #define ProccessButton(vk, b) \
-                    if (virtualKeyCode == vk) {\
-                        input.buttons[b].changed = isDown != input.buttons[b].isDown;\
-                        input.buttons[b].isDown = isDown;\
-                    }
-
-                    ProccessButton(VK_LEFT, BUTTON_LEFT);
-                    ProccessButton(VK_RIGHT, BUTTON_RIGHT);
-                    ProccessButton(VK_UP, BUTTON_UP);
-                    ProccessButton(VK_DOWN, BUTTON_DOWN);
-
+                    ProccessButtons(&input, virtualKeyCode, wasDown, isDown);
                 } break;
                 default: {
                     TranslateMessage(&msg);
@@ -176,4 +170,32 @@ int WINAPI WinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance, _
     }
 
     return 0;
+}
+
+void ProccessButtons(Input* input, int vkCode, int wasDown, int isDown) {
+    #define ProccessButton(b) \
+    input->buttons[b].changed = isDown != input->buttons[b].isDown;\
+    input->buttons[b].isDown = isDown;\
+
+    switch (vkCode) {
+        case VK_A:
+        case VK_LEFT: {
+            ProccessButton(BUTTON_LEFT);
+        } break;
+        case VK_D:
+        case VK_RIGHT: {
+            ProccessButton(BUTTON_RIGHT);
+        } break;
+        case VK_W:
+        case VK_UP: {
+            ProccessButton(BUTTON_UP);
+        } break;
+        case VK_S:
+        case VK_DOWN: {
+            ProccessButton(BUTTON_DOWN);
+        } break;
+        default: {
+            
+        } break;
+    }
 }

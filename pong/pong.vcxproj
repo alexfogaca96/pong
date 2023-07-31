@@ -162,6 +162,7 @@
     <ClInclude Include="game.h" />
     <ClInclude Include="render.h" />
     <ClInclude Include="math.h" />
+    <ClInclude Include="win32_input.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
