@@ -2,7 +2,20 @@
 #include "math.h"
 
 #define GAME_SCALE 0.001f
-#define ASPECT_RATIO 1.77f
+#define MAX_RESOLUTION_WIDTH 1920
+#define MAX_RESOLUTION_HEIGHT 1080
+
+
+
+float widthMultiplier()
+{
+	return (float) Clamp(0, renderBuffer.width, MAX_RESOLUTION_WIDTH) / initialScreenSize.width;
+}
+
+float heightMultiplier()
+{
+	return (float) Clamp(0, renderBuffer.height, MAX_RESOLUTION_WIDTH) / initialScreenSize.height;
+}
 
 void ClearScreen(unsigned int color)
 {
@@ -29,24 +42,20 @@ void DrawRectInPixels(int x0, int y0, int x1, int y1, unsigned int color)
 	}
 }
 
-/* didn't quite understand and other than being pixel-independent it seems bad */
-void DrawRect(vec2 v, vec2 halfSize, unsigned int color)
+void DrawRectAnchorLeftBottom(vec2 v, vec2 size, unsigned int color)
 {
-	float aspectMultiplier = (float) renderBuffer.height;
-	if ((float) renderBuffer.width / (float) renderBuffer.height < ASPECT_RATIO) {
-		aspectMultiplier = (float) renderBuffer.width / ASPECT_RATIO;
-	}
+	int x0 = (int)(v.x * widthMultiplier());
+	int y0 = (int)(v.y * heightMultiplier());
+	int x1 = (int)((v.x + size.x) * widthMultiplier());
+	int y1 = (int)((v.y + size.y) * heightMultiplier());
+	DrawRectInPixels(x0, y0, x1, y1, color);
+}
 
-	float aspectInScale = aspectMultiplier * GAME_SCALE;
-	halfSize.x *= aspectInScale;
-	halfSize.y *= aspectInScale;
-	v.x *= aspectInScale;
-	v.y *= aspectInScale;
-
-	int x0 = (int) (v.x - halfSize.x);
-	int y0 = (int) (v.y - halfSize.y);
-	int x1 = (int) (v.x + halfSize.x);
-	int y1 = (int) (v.y + halfSize.y);
-
+void DrawRect(vec2 v, vec2 size, unsigned int color)
+{
+	int x0 = (int)((v.x - size.x) * widthMultiplier());
+	int y0 = (int)((v.y - size.y) * heightMultiplier());
+	int x1 = (int)((v.x + size.x) * widthMultiplier());
+	int y1 = (int)((v.y + size.y) * heightMultiplier());
 	DrawRectInPixels(x0, y0, x1, y1, color);
 }

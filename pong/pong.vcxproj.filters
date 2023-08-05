@@ -33,6 +33,12 @@
     <ClCompile Include="win32_render.h">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="physics.h">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="physics.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="render.h">

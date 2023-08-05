@@ -2,6 +2,7 @@
 #define _UNICODE
 
 #define TITLE L"Pong!"
+#define REAL_WINDOW_SIZE_TO_RENDER_SIZE_X_OFFSET 16
 #define REAL_WINDOW_SIZE_TO_RENDER_SIZE_Y_OFFSET 39
 
 #include "game.h"
@@ -31,7 +32,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam)
         {
             RECT rect;
             GetWindowRect(hWnd, &rect);
-            renderBuffer.width = rect.right - rect.left;
+            renderBuffer.width = rect.right - rect.left - REAL_WINDOW_SIZE_TO_RENDER_SIZE_X_OFFSET;
             renderBuffer.height = rect.bottom - rect.top - REAL_WINDOW_SIZE_TO_RENDER_SIZE_Y_OFFSET;
             if (renderBuffer.pixels) {
                 VirtualFree(renderBuffer.pixels, 0, MEM_RELEASE);
@@ -115,6 +116,28 @@ int WINAPI WinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance, _
         return -1;
     }
 
+    // Intialize game
+    MSG msg = { 0 };
+    while (PeekMessageA(&msg, hWnd, 0, 0, PM_REMOVE)) {
+        TranslateMessage(&msg);
+        DispatchMessage(&msg);
+    }
+    initialScreenSize.width = renderBuffer.width;
+    initialScreenSize.height = renderBuffer.height;
+    CreateGame();
+    StretchDIBits(
+        hdc,
+        0, 0,
+        renderBuffer.width, renderBuffer.height,
+        0, 0,
+        renderBuffer.width, renderBuffer.height,
+        renderBuffer.pixels,
+        &win32RenderBuffer.bitmap,
+        DIB_RGB_COLORS,
+        SRCCOPY
+    );
+
+
     LARGE_INTEGER lastTime;
     QueryPerformanceCounter(&lastTime);
     LARGE_INTEGER frequency;
@@ -129,7 +152,6 @@ int WINAPI WinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance, _
 
         MSG msg = { 0 };
         while (PeekMessageA(&msg, hWnd, 0, 0, PM_REMOVE)) {
-            
             switch (msg.message) {
                 case WM_SYSKEYDOWN:
                 case WM_SYSKEYUP:
@@ -164,7 +186,8 @@ int WINAPI WinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance, _
         );
 
         LARGE_INTEGER currentTime;
-        QueryPerformanceCounter(&currentTime, lastDeltaTime);
+        QueryPerformanceCounter(&currentTime);
+        QueryPerformanceCounter(&currentTime);
         lastDeltaTime = (float) (currentTime.QuadPart - lastTime.QuadPart) / frequency.QuadPart;
         lastTime = currentTime;
     }
