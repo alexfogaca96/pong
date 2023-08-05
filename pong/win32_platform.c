@@ -14,63 +14,8 @@
 #include <Windows.h>
 
 
+LRESULT CALLBACK WndProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam);
 void ProccessButtons(Input* input, int vkCode, int wasDown, int isDown);
-
-
-LRESULT CALLBACK WndProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam)
-{
-    switch (msg) {
-        case WM_PAINT:
-        {
-            PAINTSTRUCT ps;
-            HDC hDc = BeginPaint(hWnd, &ps);
-            FillRect(hDc, &ps.rcPaint, (HBRUSH)(COLOR_WINDOW + 1));
-            EndPaint(hWnd, &ps);
-            return 0;
-        }
-        case WM_SIZE:
-        {
-            RECT rect;
-            GetWindowRect(hWnd, &rect);
-            renderBuffer.width = rect.right - rect.left - REAL_WINDOW_SIZE_TO_RENDER_SIZE_X_OFFSET;
-            renderBuffer.height = rect.bottom - rect.top - REAL_WINDOW_SIZE_TO_RENDER_SIZE_Y_OFFSET;
-            if (renderBuffer.pixels) {
-                VirtualFree(renderBuffer.pixels, 0, MEM_RELEASE);
-            }
-            renderBuffer.pixels = VirtualAlloc(
-                0,
-                sizeof(unsigned int) * renderBuffer.width * renderBuffer.height,
-                MEM_COMMIT | MEM_RESERVE,
-                PAGE_READWRITE
-            );
-            win32RenderBuffer.bitmap.bmiHeader.biSize = sizeof(win32RenderBuffer.bitmap.bmiHeader);
-            win32RenderBuffer.bitmap.bmiHeader.biWidth = renderBuffer.width;
-            win32RenderBuffer.bitmap.bmiHeader.biHeight = renderBuffer.height;
-            win32RenderBuffer.bitmap.bmiHeader.biPlanes = 1;
-            win32RenderBuffer.bitmap.bmiHeader.biBitCount = 32;
-            win32RenderBuffer.bitmap.bmiHeader.biCompression = BI_RGB;
-            win32RenderBuffer.bitmap.bmiHeader.biSizeImage = 0;
-            return 0;
-        }
-        case WM_CLOSE:
-        {
-            if (MessageBox(hWnd, L"Are you sure?", TITLE, MB_OKCANCEL) == IDOK)
-            {
-                DestroyWindow(hWnd);
-            }
-            return 0;
-        }
-        case WM_DESTROY:
-        {
-            PostQuitMessage(0);
-            return 0;
-        }
-        default:
-        {
-            return DefWindowProc(hWnd, msg, wParam, lParam);
-        }
-    }
-}
 
 int WINAPI WinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance, _In_ LPSTR pCmdLine, _In_ int nCmdShow)
 {
@@ -193,6 +138,61 @@ int WINAPI WinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance, _
     }
 
     return 0;
+}
+
+LRESULT CALLBACK WndProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam)
+{
+    switch (msg) {
+    case WM_PAINT:
+    {
+        PAINTSTRUCT ps;
+        HDC hDc = BeginPaint(hWnd, &ps);
+        FillRect(hDc, &ps.rcPaint, (HBRUSH)(COLOR_WINDOW + 1));
+        EndPaint(hWnd, &ps);
+        return 0;
+    }
+    case WM_SIZE:
+    {
+        RECT rect;
+        GetWindowRect(hWnd, &rect);
+        renderBuffer.width = rect.right - rect.left - REAL_WINDOW_SIZE_TO_RENDER_SIZE_X_OFFSET;
+        renderBuffer.height = rect.bottom - rect.top - REAL_WINDOW_SIZE_TO_RENDER_SIZE_Y_OFFSET;
+        if (renderBuffer.pixels) {
+            VirtualFree(renderBuffer.pixels, 0, MEM_RELEASE);
+        }
+        renderBuffer.pixels = VirtualAlloc(
+            0,
+            sizeof(unsigned int) * renderBuffer.width * renderBuffer.height,
+            MEM_COMMIT | MEM_RESERVE,
+            PAGE_READWRITE
+        );
+        win32RenderBuffer.bitmap.bmiHeader.biSize = sizeof(win32RenderBuffer.bitmap.bmiHeader);
+        win32RenderBuffer.bitmap.bmiHeader.biWidth = renderBuffer.width;
+        win32RenderBuffer.bitmap.bmiHeader.biHeight = renderBuffer.height;
+        win32RenderBuffer.bitmap.bmiHeader.biPlanes = 1;
+        win32RenderBuffer.bitmap.bmiHeader.biBitCount = 32;
+        win32RenderBuffer.bitmap.bmiHeader.biCompression = BI_RGB;
+        win32RenderBuffer.bitmap.bmiHeader.biSizeImage = 0;
+        return 0;
+    }
+    case WM_CLOSE:
+    {
+        if (MessageBox(hWnd, L"Are you sure?", TITLE, MB_OKCANCEL) == IDOK)
+        {
+            DestroyWindow(hWnd);
+        }
+        return 0;
+    }
+    case WM_DESTROY:
+    {
+        PostQuitMessage(0);
+        return 0;
+    }
+    default:
+    {
+        return DefWindowProc(hWnd, msg, wParam, lParam);
+    }
+    }
 }
 
 void ProccessButtons(Input* input, int vkCode, int wasDown, int isDown) {
