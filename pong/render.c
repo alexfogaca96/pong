@@ -42,8 +42,6 @@ void DrawRect(vec2 v, vec2 halfSize, unsigned int color)
 	halfSize.y *= aspectInScale;
 	v.x *= aspectInScale;
 	v.y *= aspectInScale;
-	v.x += (float) renderBuffer.width * .5f;
-	v.y += (float) renderBuffer.height * .5f;
 
 	int x0 = (int) (v.x - halfSize.x);
 	int y0 = (int) (v.y - halfSize.y);
