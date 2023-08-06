@@ -23,7 +23,12 @@ vec3 Cross(vec3 a, vec3 b)
 	return (vec3) { x, y, z };
 }
 
-vec2 mul(vec2 a, float n)
+vec2 mul(vec2 v, float n)
 {
-	return (vec2) { a.x * n, a.y * n };
+	return (vec2) { v.x * n, v.y * n };
+}
+
+vec2 add(vec2 a, vec2 b)
+{
+	return (vec2) { a.x + b.x, a.y + b.y };
 }

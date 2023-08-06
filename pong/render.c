@@ -49,6 +49,11 @@ void DrawRect(vec2 v, vec2 size, unsigned int color)
 	DrawRectInPixels(x0, y0, x1, y1, color);
 }
 
+void DrawCircle(vec2 v, float diameter, unsigned int color)
+{
+	// TODO
+}
+
 float widthMultiplier()
 {
 	return (float)Clamp(0, renderBuffer.width, MAX_RESOLUTION_WIDTH) / initialScreenSize.width;
