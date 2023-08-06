@@ -22,13 +22,17 @@ struct {
 } typedef Ball;
 
 
+unsigned int started;
+unsigned int paused;
 Paddle leftPaddle, rightPaddle;
 Ball ball;
 
 void CreateGame() {
+	started = 0;
+	paused = 0;
+	
 	float halfHeight	= (float) initialScreenSize.height / 2;
 	float width5Percent = (float) initialScreenSize.width / 20; 
-
 	vec2 initialPaddlesSize = { 15.0, 130.0 };
 	leftPaddle  = (Paddle) {
 		.pos = { (width5Percent * 3) - (initialPaddlesSize.x / 2), halfHeight - initialPaddlesSize.y / 2 }, // 15% left
@@ -40,7 +44,6 @@ void CreateGame() {
 		.size = initialPaddlesSize,
 		.speed = 750.0f,
 		.color = 0xffffff };
-
 	float initialBallDiameter = 12.0;
 	ball = (Ball) {
 		.pos = { (width5Percent * 10) - (initialBallDiameter / 2), halfHeight - (initialBallDiameter / 2) }, // screen center
@@ -55,9 +58,18 @@ void CreateGame() {
 
 void SimulateGame(Input* input, float deltaTime)
 {
-	SimulatePaddles(input, deltaTime);
-	SimulateBall(deltaTime);
-	DrawEverything();
+	if (!started) {
+		if ((Released(BUTTON_DOWN) || Released(BUTTON_UP) || Released(BUTTON_LEFT) || Released(BUTTON_RIGHT))) started = 1;		
+	}
+	else {
+		if (Released(BUTTON_PAUSE)) paused = paused ^ 1;
+		if (!paused) {
+			SimulatePaddles(input, deltaTime);
+			SimulateBall(deltaTime);
+			DrawEverything();
+		}
+		if (Released(BUTTON_RESTART)) CreateGame();
+	}
 }
 
 void SimulatePaddles(Input* input, float deltaTime)

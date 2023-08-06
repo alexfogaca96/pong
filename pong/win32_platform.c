@@ -217,6 +217,12 @@ void ProccessButtons(Input* input, int vkCode, int wasDown, int isDown) {
         case VK_DOWN: {
             ProccessButton(BUTTON_DOWN);
         } break;
+        case VK_P: {
+            ProccessButton(BUTTON_PAUSE);
+        } break;
+        case VK_R: {
+            ProccessButton(BUTTON_RESTART);
+        }
         default: {
             
         } break;
