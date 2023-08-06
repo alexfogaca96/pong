@@ -28,25 +28,20 @@ void CreateGame() {
 
 void SimulateGame(Input* input, float deltaTime)
 {
-	vec2 screenLimUp0 = { 0.0, (float)renderBuffer.height + 1.0 };
-	vec2 screenLimUp1 = { (float)renderBuffer.width, (float)renderBuffer.height + 1.0 };
 	if (IsDown(BUTTON_UP)) {
 		float nextY = leftPaddle.pos.y + (moveSpeed * deltaTime);
-		unsigned int intersect = Intersects(
+		unsigned int intersect = IntersectsScreenBoundUp(
 			(vec2) { leftPaddle.pos.x, leftPaddle.pos.y },
-			(vec2) { leftPaddle.pos.x, nextY + leftPaddle.size.y },
-			screenLimUp0, screenLimUp1);
+			(vec2) { leftPaddle.pos.x, nextY + leftPaddle.size.y });
 		if (!intersect) leftPaddle.pos.y = nextY;
 	}
 
-	vec2 screenLimDown0 = { 0.0, 0.0 };
-	vec2 screenLimDown1 = { (float)renderBuffer.width, 0.0 };
+	
 	if (IsDown(BUTTON_DOWN)) {
 		float nextY = leftPaddle.pos.y - (moveSpeed * deltaTime);
-		unsigned int intersect = Intersects(
+		unsigned int intersect = IntersectsScreenBoundDown(
 			(vec2) { leftPaddle.pos.x, leftPaddle.pos.y },
-			(vec2) { leftPaddle.pos.x, nextY - leftPaddle.size.y },
-			screenLimDown0, screenLimDown1);
+			(vec2) { leftPaddle.pos.x, nextY - leftPaddle.size.y });
 		if (!intersect) leftPaddle.pos.y = nextY;
 	}
 

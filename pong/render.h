@@ -21,4 +21,8 @@ void DrawRectInPixels(int x0, int y0, int x1, int y1, unsigned int color);
 void DrawRectAnchorLeftBottom(vec2 v, vec2 size, unsigned int color);
 void DrawRect(vec2 v, vec2 halfSize, unsigned int color);
 
+float heightMultiplier();
+float widthMultiplier();
+vec2 normByMultiplier(vec2 v);
+
 #endif

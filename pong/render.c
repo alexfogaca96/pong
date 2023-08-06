@@ -6,17 +6,6 @@
 #define MAX_RESOLUTION_HEIGHT 1080
 
 
-
-float widthMultiplier()
-{
-	return (float) Clamp(0, renderBuffer.width, MAX_RESOLUTION_WIDTH) / initialScreenSize.width;
-}
-
-float heightMultiplier()
-{
-	return (float) Clamp(0, renderBuffer.height, MAX_RESOLUTION_WIDTH) / initialScreenSize.height;
-}
-
 void ClearScreen(unsigned int color)
 {
 	unsigned int* pixel = renderBuffer.pixels;
@@ -58,4 +47,19 @@ void DrawRect(vec2 v, vec2 size, unsigned int color)
 	int x1 = (int)((v.x + size.x) * widthMultiplier());
 	int y1 = (int)((v.y + size.y) * heightMultiplier());
 	DrawRectInPixels(x0, y0, x1, y1, color);
+}
+
+float widthMultiplier()
+{
+	return (float)Clamp(0, renderBuffer.width, MAX_RESOLUTION_WIDTH) / initialScreenSize.width;
+}
+
+float heightMultiplier()
+{
+	return (float)Clamp(0, renderBuffer.height, MAX_RESOLUTION_WIDTH) / initialScreenSize.height;
+}
+
+vec2 normByMultiplier(vec2 v)
+{
+	return (vec2) { v.x * widthMultiplier(), v.y * heightMultiplier() };
 }

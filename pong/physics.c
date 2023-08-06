@@ -1,4 +1,23 @@
 #include "math.h"
+#include "render.h"
+
+unsigned int IntersectsScreenBoundUp(vec2 a0, vec2 a1)
+{
+    vec2 screenLimUp0 = { 0.0, (float) renderBuffer.height + 1.0 };
+    vec2 screenLimUp1 = { (float) renderBuffer.width, (float) renderBuffer.height + 1.0 };
+    a0 = normByMultiplier(a0);
+    a1 = normByMultiplier(a1);
+    return Intersects(a0, a1, screenLimUp0, screenLimUp1);
+}
+
+unsigned int IntersectsScreenBoundDown(vec2 a0, vec2 a1)
+{
+    vec2 screenLimDown0 = { 0.0, 0.0 };
+    vec2 screenLimDown1 = { (float) renderBuffer.width, 0.0 };
+    a0 = normByMultiplier(a0);
+    a1 = normByMultiplier(a1);
+    return Intersects(a0, a1, screenLimDown0, screenLimDown1);
+}
 
 unsigned int Intersects(vec2 a0, vec2 a1, vec2 b0, vec2 b1)
 {

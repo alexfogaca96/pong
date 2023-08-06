@@ -7,16 +7,23 @@ int Clamp(int min, int val, int max)
 	return val;
 }
 
-vec3 Cross2(vec2 a, vec2 b) {
+vec3 Cross2(vec2 a, vec2 b)
+{
 	int x = a.y - b.y;
 	int y = b.x - a.x;
 	int z = (a.x * b.y) - (a.y * b.x);
 	return (vec3) { x, y, z };
 }
 
-vec3 Cross(vec3 a, vec3 b) {
+vec3 Cross(vec3 a, vec3 b)
+{
 	int x = (a.y * b.z) - (a.z * b.y);
 	int y = (b.x * a.z) - (a.x * b.z);
 	int z = (a.x * b.y) - (a.y * b.x);
 	return (vec3) { x, y, z };
+}
+
+vec2 mul(vec2 a, float n)
+{
+	return (vec2) { a.x * n, a.y * n };
 }
