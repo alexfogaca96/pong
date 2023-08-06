@@ -30,9 +30,17 @@ struct {
 
 
 int Clamp(int min, int val, int max);
+
 vec3 Cross2(vec2 a, vec2 b);
 vec3 Cross(vec3 a, vec3 b);
 vec2 mul(vec2 v, float n);
 vec2 add(vec2 a, vec2 b);
+vec2 rotate(vec2 v, float eulerAngle);
+
+float sin(float x);
+float cos(float x);
+float cosAndSin(float x, float* sinX);
+float sqrt(float x);
+float round(float x);
 
 #endif

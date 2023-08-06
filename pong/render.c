@@ -42,10 +42,10 @@ void DrawRectAnchorLeftBottom(vec2 v, vec2 size, unsigned int color)
 
 void DrawRect(vec2 v, vec2 size, unsigned int color)
 {
-	int x0 = (int)((v.x - size.x) * widthMultiplier());
-	int y0 = (int)((v.y - size.y) * heightMultiplier());
-	int x1 = (int)((v.x + size.x) * widthMultiplier());
-	int y1 = (int)((v.y + size.y) * heightMultiplier());
+	int x0 = (int)((v.x - size.x / 2) * widthMultiplier());
+	int y0 = (int)((v.y - size.y / 2) * heightMultiplier());
+	int x1 = (int)((v.x + size.x / 2) * widthMultiplier());
+	int y1 = (int)((v.y + size.y / 2) * heightMultiplier());
 	DrawRectInPixels(x0, y0, x1, y1, color);
 }
 
