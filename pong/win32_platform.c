@@ -1,5 +1,9 @@
+#ifndef UNICODE
 #define UNICODE
+#endif
+#ifndef _UNICODE
 #define _UNICODE
+#endif
 
 #define TITLE L"Pong!"
 #define REAL_WINDOW_SIZE_TO_RENDER_SIZE_X_OFFSET 16
@@ -17,6 +21,7 @@
 LRESULT CALLBACK WndProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam);
 void ProccessButtons(Input* input, int vkCode, int wasDown, int isDown);
 
+// TODO: move some stuff to heap
 int WINAPI WinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance, _In_ LPSTR pCmdLine, _In_ int nCmdShow)
 {
     const wchar_t windowName[] = L"Game Class";
@@ -60,6 +65,12 @@ int WINAPI WinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance, _
         MessageBoxA(NULL, "HDC failed!", "Error!", MB_ICONERROR | MB_OK);
         return -1;
     }
+    
+    // Configs
+    SetBkMode(hdc, TRANSPARENT);
+    SetTextColor(hdc, RGB(255, 255, 255));
+    HFONT hFont = CreateFontA(10, 0, 0, 0, FW_DONTCARE, FALSE, FALSE, FALSE, ANSI_CHARSET, OUT_DEFAULT_PRECIS, CLIP_DEFAULT_PRECIS, ANTIALIASED_QUALITY, DEFAULT_PITCH | FF_SWISS, L"Arial");
+    SendMessage(hWnd, WM_SETFONT, hFont, TRUE);
 
     // Intialize game
     MSG msg = { 0 };
@@ -129,6 +140,18 @@ int WINAPI WinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance, _
             DIB_RGB_COLORS,
             SRCCOPY
         );
+        for (int i = 0; i < TEXT_COUNT; i++) {
+            Text text = uiTexts[i];
+            if (text.active) {
+                LPCWSTR convertedText[4096] = { 0 };
+                MultiByteToWideChar(CP_ACP, 0, text.text, -1, &convertedText, 4096);
+                if (convertedText != NULL) {
+                    RECT rect = { .left = text.upLeftX, .top = text.upLeftY, .right = text.downRightX, .bottom = text.downRightY };
+                    // TODO: fix flickering caused by StretchDIBits not considering text every frame
+                    DrawText(hdc, convertedText, text.textLength, &rect, DT_CENTER | DT_VCENTER | DT_WORDBREAK | DT_EXPANDTABS); 
+                }
+            }
+        }
 
         LARGE_INTEGER currentTime;
         QueryPerformanceCounter(&currentTime);

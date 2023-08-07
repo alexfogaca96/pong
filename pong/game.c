@@ -5,6 +5,7 @@
 #include "physics.h"
 
 #include <stdlib.h>
+#include <string.h>
 
 struct {
 	vec2 pos;
@@ -53,13 +54,25 @@ void CreateGame() {
 		.color = 0xffffff
 	};
 
+	char const* text = "Press any key to start!";
+	Text clickToStartText = {
+		.upLeftX = (renderBuffer.width / 2) - 100, .upLeftY = 50, .downRightX = (renderBuffer.width / 2) + 100, .downRightY = 150, // Text position doesn't consider screen size
+		.text = text, .textLength = strlen(text),
+		.active = 1
+	};
+	uiTexts[CLICK_TO_START] = clickToStartText;
+
 	DrawEverything();
 }
 
 void SimulateGame(Input* input, float deltaTime)
 {
 	if (!started) {
-		if ((Released(BUTTON_DOWN) || Released(BUTTON_UP) || Released(BUTTON_LEFT) || Released(BUTTON_RIGHT))) started = 1;		
+		if ((Released(BUTTON_DOWN) || Released(BUTTON_UP) || Released(BUTTON_LEFT) || Released(BUTTON_RIGHT))) {
+			started = 1;
+			uiTexts[CLICK_TO_START].active = 0;
+		}
+		DrawEverything();
 	}
 	else {
 		if (Released(BUTTON_PAUSE)) paused = paused ^ 1;
