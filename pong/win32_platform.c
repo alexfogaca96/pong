@@ -146,7 +146,9 @@ int WINAPI WinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance, _
                 LPCWSTR convertedText[4096] = { 0 };
                 MultiByteToWideChar(CP_ACP, 0, text.text, -1, &convertedText, 4096);
                 if (convertedText != NULL) {
-                    RECT rect = { .left = text.upLeftX, .top = text.upLeftY, .right = text.downRightX, .bottom = text.downRightY };
+                    RECT rect = {
+                        .left = (renderBuffer.width / 2) - (text.width / 2), .top = 4 * (renderBuffer.height / 5) - (text.height / 2),
+                        .right = (renderBuffer.width / 2) + (text.width / 2), .bottom = 4 * (renderBuffer.height / 5) + (text.height / 2) };
                     // TODO: fix flickering caused by StretchDIBits not considering text every frame
                     DrawText(hdc, convertedText, text.textLength, &rect, DT_CENTER | DT_VCENTER | DT_WORDBREAK | DT_EXPANDTABS); 
                 }

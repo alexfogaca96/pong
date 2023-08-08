@@ -13,7 +13,7 @@ struct {
 } typedef ScreenSize;
 
 struct {
-	long upLeftX, upLeftY, downRightX, downRightY;
+	long width, height;
 	char const* text;
 	long textLength;
 	unsigned int active;
@@ -21,6 +21,7 @@ struct {
 
 enum {
 	CLICK_TO_START,
+	GAME_PAUSED,
 	TEXT_COUNT
 };
 

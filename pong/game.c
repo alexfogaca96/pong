@@ -54,13 +54,23 @@ void CreateGame() {
 		.color = 0xffffff
 	};
 
+	// TODO: maybe change to an image (bitmap) and put in renderBuffer for simplicity
+	// or learn how to properly do text (I think this is more complicated)
 	char const* text = "Press any key to start!";
 	Text clickToStartText = {
-		.upLeftX = (renderBuffer.width / 2) - 100, .upLeftY = 50, .downRightX = (renderBuffer.width / 2) + 100, .downRightY = 150, // Text position doesn't consider screen size
+		.width = 200, .height = 50,
 		.text = text, .textLength = strlen(text),
 		.active = 1
 	};
 	uiTexts[CLICK_TO_START] = clickToStartText;
+
+	char const* pauseText = "Game is paused.";
+	Text gamePausedText = {
+		.width = 200, .height = 50,
+		.text = pauseText, .textLength = strlen(text),
+		.active = 0
+	};
+	uiTexts[GAME_PAUSED] = gamePausedText;
 
 	DrawEverything();
 }
@@ -75,7 +85,10 @@ void SimulateGame(Input* input, float deltaTime)
 		DrawEverything();
 	}
 	else {
-		if (Released(BUTTON_PAUSE)) paused = paused ^ 1;
+		if (Released(BUTTON_PAUSE)) {
+			paused ^= 1;
+			uiTexts[GAME_PAUSED].active ^= 1;
+		}
 		if (!paused) {
 			SimulatePaddles(input, deltaTime);
 			SimulateBall(deltaTime);
@@ -115,12 +128,10 @@ void SimulateBall(float deltaTime)
 	if (Intersects(ball.pos, nextPos, leftPaddle.pos, (vec2) { leftPaddle.pos.x, leftPaddle.pos.y + leftPaddle.size.y }, intersectPaddleX, intersectPaddleY)
 	 || Intersects(ball.pos, nextPos, rightPaddle.pos, (vec2) { rightPaddle.pos.x, rightPaddle.pos.y + rightPaddle.size.y }, intersectPaddleX, intersectPaddleY)) {
 		ball.dir.x *= -1.0;
+		// TODO: define rule for ball angle and speed changes if paddle intersection
 		float angleOffset = (float) ((rand() % 20) - 10);
 		ball.dir = rotate(ball.dir, angleOffset);
 	}
-	// TODO: Calculate ball dir considering screen and paddle intersections:
-	// - screen > no speed up or down
-	// - paddle > define rule for ball angle and speed changes
 	ball.pos = add(ball.pos, mul(ball.dir, ball.speed * deltaTime));
 }
 
