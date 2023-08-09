@@ -34,7 +34,6 @@ void ClearScreen(unsigned int color);
 void DrawRectInPixels(int x0, int y0, int x1, int y1, unsigned int color);
 void DrawRectAnchorLeftBottom(vec2 v, vec2 size, unsigned int color);
 void DrawRect(vec2 v, vec2 size, unsigned int color);
-void DrawCircle(vec2 v, float diameter, unsigned int color);
 
 float heightMultiplier();
 float widthMultiplier();

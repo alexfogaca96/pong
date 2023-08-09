@@ -27,10 +27,12 @@ unsigned int started;
 unsigned int paused;
 Paddle leftPaddle, rightPaddle;
 Ball ball;
+unsigned int paddleHitCount;
 
 void CreateGame() {
 	started = 0;
 	paused = 0;
+	paddleHitCount = 0;
 	
 	float halfHeight	= (float) initialScreenSize.height / 2;
 	float width5Percent = (float) initialScreenSize.width / 20; 
@@ -49,7 +51,7 @@ void CreateGame() {
 	ball = (Ball) {
 		.pos = { (width5Percent * 10) - (initialBallDiameter / 2), halfHeight - (initialBallDiameter / 2) }, // screen center
 		.dir = { 1.0, 0.0 },
-		.speed = 1000.0f,
+		.speed = 750.0f,
 		.diameter = initialBallDiameter,
 		.color = 0xffffff
 	};
@@ -117,22 +119,35 @@ void SimulateBall(float deltaTime)
 {
 	vec2 nextPos = add(ball.pos, mul(ball.dir, ball.speed * deltaTime));
 	float sx = -1.0, sy = -1.0, px = -1.0, py = -1.0;
-	float* intersectScreenX = &sx;
-	float* intersectScreenY = &sy;
-	float* intersectPaddleX = &px;
-	float* intersectPaddleY = &py;
-	if (IntersectsScreenBoundUp(ball.pos, nextPos, intersectScreenX, intersectScreenY)
-	 || IntersectsScreenBoundDown(ball.pos, nextPos, intersectScreenX, intersectScreenY)) {
+	float* intersectScreenX = &sx, * intersectScreenY = &sy, * intersectPaddleX = &px, *intersectPaddleY = &py;
+	if (IntersectsScreenBoundUp(ball.pos, (vec2) { nextPos.x, nextPos.y + ball.diameter } , intersectScreenX, intersectScreenY) || IntersectsScreenBoundDown(ball.pos, nextPos, intersectScreenX, intersectScreenY)) {
 		ball.dir.y *= -1.0;
 	}
-	if (Intersects(ball.pos, nextPos, leftPaddle.pos, (vec2) { leftPaddle.pos.x, leftPaddle.pos.y + leftPaddle.size.y }, intersectPaddleX, intersectPaddleY)
-	 || Intersects(ball.pos, nextPos, rightPaddle.pos, (vec2) { rightPaddle.pos.x, rightPaddle.pos.y + rightPaddle.size.y }, intersectPaddleX, intersectPaddleY)) {
-		ball.dir.x *= -1.0;
-		// TODO: define rule for ball angle and speed changes if paddle intersection
-		float angleOffset = (float) ((rand() % 20) - 10);
-		ball.dir = rotate(ball.dir, angleOffset);
+	float paddleHitDivergence = (float) (rand() % 10);
+	float paddleCornerHitDivergence = paddleHitDivergence + 10;
+	#define IntersectPaddle(p,r) \
+	if (Intersects(ball.pos, nextPos, p.pos, (vec2) { p.pos.x, p.pos.y + p.size.y }, intersectPaddleX, intersectPaddleY)) {\
+		float partHit = (*intersectPaddleY - p.pos.y) / p.size.y;\
+		if (partHit > 0.85) ball.dir = rotate(ball.dir, -paddleCornerHitDivergence * r);\
+		else if (partHit < 0.15) ball.dir = rotate(ball.dir, paddleCornerHitDivergence * r);\
+		else {\
+			unsigned int revert = rand() % 2;\
+			if (revert) ball.dir = rotate(ball.dir, -paddleHitDivergence * r);\
+			else		ball.dir = rotate(ball.dir, paddleHitDivergence * r);\
+		}\
 	}
-	ball.pos = add(ball.pos, mul(ball.dir, ball.speed * deltaTime));
+	IntersectPaddle(leftPaddle, -1);
+	IntersectPaddle(rightPaddle, 1);
+	if (*intersectPaddleX > 0 || *intersectPaddleY > 0) {
+		ball.dir.x *= -1.0;
+		ball.speed += 1;
+		paddleHitCount++;
+		if (paddleHitCount == 100) {
+			leftPaddle.speed += 50;
+			rightPaddle.speed += 50;
+		}
+	}
+	ball.pos = add(ball.pos, mul(ball.dir, ball.speed * deltaTime)); 
 }
 
 void DrawEverything()
@@ -140,6 +155,5 @@ void DrawEverything()
 	ClearScreen(0x111111);
 	DrawRectAnchorLeftBottom(leftPaddle.pos, leftPaddle.size, leftPaddle.color);
 	DrawRectAnchorLeftBottom(rightPaddle.pos, rightPaddle.size, rightPaddle.color);
-	// DrawCircle(ball.pos, ball.diameter, ball.color);  <-- waiting implementation
 	DrawRectAnchorLeftBottom(ball.pos, (vec2) { ball.diameter, ball.diameter }, ball.color);
 }
