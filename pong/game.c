@@ -58,7 +58,7 @@ void CreateGame() {
 
 	// TODO: maybe change to an image (bitmap) and put in renderBuffer for simplicity
 	// or learn how to properly do text (I think this is more complicated)
-	char const* text = "Press any key to start!";
+	char const* text = "Press any key!";
 	Text clickToStartText = {
 		.width = 200, .height = 50,
 		.text = text, .textLength = strlen(text),
@@ -118,6 +118,8 @@ void SimulatePaddles(Input* input, float deltaTime)
 void SimulateBall(float deltaTime)
 {
 	vec2 nextPos = add(ball.pos, mul(ball.dir, ball.speed * deltaTime));
+	// TODO: check intersection with side walls to restart game
+
 	float sx = -1.0, sy = -1.0, px = -1.0, py = -1.0;
 	float* intersectScreenX = &sx, * intersectScreenY = &sy, * intersectPaddleX = &px, *intersectPaddleY = &py;
 	if (IntersectsScreenBoundUp(ball.pos, (vec2) { nextPos.x, nextPos.y + ball.diameter } , intersectScreenX, intersectScreenY) || IntersectsScreenBoundDown(ball.pos, nextPos, intersectScreenX, intersectScreenY)) {
