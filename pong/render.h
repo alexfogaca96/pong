@@ -22,6 +22,7 @@ struct {
 enum {
 	CLICK_TO_START,
 	GAME_PAUSED,
+	GAME_SCORE,
 	TEXT_COUNT
 };
 

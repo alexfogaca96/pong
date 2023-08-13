@@ -4,6 +4,7 @@
 #include "platform_common.h"
 #include "physics.h"
 
+#include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 
@@ -33,11 +34,11 @@ void CreateGame() {
 	started = 0;
 	paused = 0;
 	paddleHitCount = 0;
-	
-	float halfHeight	= (float) initialScreenSize.height / 2;
-	float width5Percent = (float) initialScreenSize.width / 20; 
+
+	float halfHeight = (float)initialScreenSize.height / 2;
+	float width5Percent = (float)initialScreenSize.width / 20;
 	vec2 initialPaddlesSize = { 15.0, 130.0 };
-	leftPaddle  = (Paddle) {
+	leftPaddle = (Paddle){
 		.pos = { (width5Percent * 3) - (initialPaddlesSize.x / 2), halfHeight - initialPaddlesSize.y / 2 }, // 15% left
 		.size = initialPaddlesSize,
 		.speed = 750.0f,
@@ -48,7 +49,7 @@ void CreateGame() {
 		.speed = 750.0f,
 		.color = 0xffffff };
 	float initialBallDiameter = 12.0;
-	ball = (Ball) {
+	ball = (Ball){
 		.pos = { (width5Percent * 10) - (initialBallDiameter / 2), halfHeight - (initialBallDiameter / 2) }, // screen center
 		.dir = { 1.0, 0.0 },
 		.speed = 750.0f,
@@ -69,10 +70,18 @@ void CreateGame() {
 	char const* pauseText = "Game is paused.";
 	Text gamePausedText = {
 		.width = 200, .height = 50,
-		.text = pauseText, .textLength = strlen(text),
+		.text = pauseText, .textLength = strlen(pauseText),
 		.active = 0
 	};
 	uiTexts[GAME_PAUSED] = gamePausedText;
+
+	char const* scoreText = "0"; // TODO: change this to paddleHitCount value
+	Text gameScoreText = {
+		.width = 50, .height = 15,
+		.text = scoreText, .textLength = strlen(scoreText),
+		.active = 1
+	};
+	uiTexts[GAME_SCORE] = gameScoreText;
 
 	DrawEverything();
 }
