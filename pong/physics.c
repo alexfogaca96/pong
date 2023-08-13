@@ -22,6 +22,24 @@ unsigned int IntersectsScreenBoundDown(vec2 a0, vec2 a1, float* intersectX, floa
     return Intersects(a0, a1, screenLimDown0, screenLimDown1, intersectX, intersectY);
 }
 
+unsigned int IntersectsScreenBoundLeft(vec2 a0, vec2 a1, float* intersectX, float* intersectY)
+{
+    vec2 screenLimLeft0 = { 0.0, 0.0 };
+    vec2 screenLimLeft1 = { 0, (float) renderBuffer.height };
+    a0 = normByMultiplier(a0);
+    a1 = normByMultiplier(a1);
+    return Intersects(a0, a1, screenLimLeft0, screenLimLeft1, intersectX, intersectY);
+}
+
+unsigned int IntersectsScreenBoundRight(vec2 a0, vec2 a1, float* intersectX, float* intersectY)
+{
+    vec2 screenLimRight0 = { (float) renderBuffer.width, 0 };
+    vec2 screenLimRight1 = { (float) renderBuffer.width, (float)renderBuffer.height };
+    a0 = normByMultiplier(a0);
+    a1 = normByMultiplier(a1);
+    return Intersects(a0, a1, screenLimRight0, screenLimRight1, intersectX, intersectY);
+}
+
 unsigned int Intersects(vec2 a0, vec2 a1, vec2 b0, vec2 b1, float* intersectX, float* intersectY)
 {
     vec2 s1 = { a1.x - a0.x, a1.y - a0.y };

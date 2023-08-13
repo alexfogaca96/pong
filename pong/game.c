@@ -93,7 +93,10 @@ void SimulateGame(Input* input, float deltaTime)
 		}
 		if (!paused) {
 			SimulatePaddles(input, deltaTime);
-			SimulateBall(deltaTime);
+			if (!SimulateBall(deltaTime)) {
+				CreateGame();
+				return;
+			}
 			DrawEverything();
 		}
 		if (Released(BUTTON_RESTART)) CreateGame();
@@ -115,13 +118,16 @@ void SimulatePaddles(Input* input, float deltaTime)
 	rightPaddle.pos.y = leftPaddle.pos.y;
 }
 
-void SimulateBall(float deltaTime)
+unsigned int SimulateBall(float deltaTime)
 {
 	vec2 nextPos = add(ball.pos, mul(ball.dir, ball.speed * deltaTime));
-	// TODO: check intersection with side walls to restart game
-
 	float sx = -1.0, sy = -1.0, px = -1.0, py = -1.0;
 	float* intersectScreenX = &sx, * intersectScreenY = &sy, * intersectPaddleX = &px, *intersectPaddleY = &py;
+	if (IntersectsScreenBoundLeft(ball.pos, nextPos, intersectScreenX, intersectScreenY) || IntersectsScreenBoundRight(ball.pos, nextPos, intersectScreenX, intersectScreenY)) {
+		CreateGame();
+		return 0;
+	}
+
 	if (IntersectsScreenBoundUp(ball.pos, (vec2) { nextPos.x, nextPos.y + ball.diameter } , intersectScreenX, intersectScreenY) || IntersectsScreenBoundDown(ball.pos, nextPos, intersectScreenX, intersectScreenY)) {
 		ball.dir.y *= -1.0;
 	}
@@ -150,6 +156,7 @@ void SimulateBall(float deltaTime)
 		}
 	}
 	ball.pos = add(ball.pos, mul(ball.dir, ball.speed * deltaTime)); 
+	return 1;
 }
 
 void DrawEverything()
